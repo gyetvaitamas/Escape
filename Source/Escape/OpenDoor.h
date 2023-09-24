@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include <Engine/TriggerVolume.h>
 #include "OpenDoor.generated.h"
 
 
@@ -19,6 +20,12 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere)
+	float OpenAngle = 90.0f;
+
+	UPROPERTY(EditAnywhere)
+	ATriggerVolume* PressurePlate;
 
 public:	
 	// Called every frame
