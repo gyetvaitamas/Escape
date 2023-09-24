@@ -16,20 +16,30 @@ class ESCAPE_API UOpenDoor : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UOpenDoor();
+	void OpenDoor();
+	void CloseDoor();
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-	void OpenDoor();
+	
+private:
+	UPROPERTY(EditAnywhere)
+	float OpenAngle = 20.0f;
 
-	UPROPERTY(VisibleAnywhere)
-	float OpenAngle = 90.0f;
+	UPROPERTY(EditAnywhere)
+	float CloseAngle = -90.0f;
 
 	UPROPERTY(EditAnywhere)
 	ATriggerVolume* PressurePlate;
 
 	UPROPERTY(EditAnywhere)
+	float DoorCloseDelay = 1.0f;
+
+	float LastDoorOpenTime;
+
 	AActor* ActorThatOpens;
+	AActor* Owner;
 
 public:	
 	// Called every frame
