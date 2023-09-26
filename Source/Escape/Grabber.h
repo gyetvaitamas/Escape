@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include <PhysicsEngine/PhysicsHandleComponent.h>
 #include "Grabber.generated.h"
 
 
@@ -25,7 +26,13 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
+	// How far ahead of the player can we reach in cm
 	float Reach = 100.0f;
 
+	UPhysicsHandleComponent* PhysicsHandle = nullptr;
+	UInputComponent* InputComponent = nullptr;
+
+	// Ray-cast and grab what's in reach
+	void Grab();
 		
 };
