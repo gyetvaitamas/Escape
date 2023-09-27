@@ -48,5 +48,5 @@ private:
 
 	// Return current end of line trace
 	FVector GetLineTraceEnd();
-		
+
 };
