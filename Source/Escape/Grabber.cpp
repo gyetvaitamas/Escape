@@ -16,7 +16,6 @@ UGrabber::UGrabber()
 	// ...
 }
 
-
 // Called when the game starts
 void UGrabber::BeginPlay()
 {
@@ -33,8 +32,6 @@ void UGrabber::SetupInputComponent()
 
 	if (InputComponent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Input component found!"));
-
 		// Bind the input axis
 		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
 		InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Release);
@@ -50,13 +47,9 @@ void UGrabber::FindPhysicsHandleComponent()
 {
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
 
-	if (PhysicsHandle)
+	if (PhysicsHandle == nullptr)
 	{
-		// PhysicsHandle has found
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("%s class is not found!"), *GetOwner()->GetName());
+		UE_LOG(LogTemp, Error, TEXT("%s missing physics handle component!"), *GetOwner()->GetName());
 	}
 }
 
@@ -65,6 +58,23 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (PhysicsHandle->GrabbedComponent)
+	{
+		PhysicsHandle->SetTargetLocation(GetLineTraceEnd());
+	}
+}
+
+FVector UGrabber::GetLineTraceStart()
+{
+	// Get player view point
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewPointLocation, OUT PlayerViewPointRotation);
+	return PlayerViewPointLocation;
+}
+
+FVector UGrabber::GetLineTraceEnd()
+{
 	// Get player view point
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotation;
@@ -72,17 +82,11 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 	// Get line end point from the player POV
 	FVector LineTraceEnd = PlayerViewPointLocation + (PlayerViewPointRotation.Vector() * Reach);
-
-	if (PhysicsHandle->GrabbedComponent)
-	{
-		PhysicsHandle->SetTargetLocation(LineTraceEnd);
-	}
+	return LineTraceEnd;
 }
 
 void UGrabber::Grab()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Grabbed."));
-
 	// Line trace and reach any actors with physics body collision channel set
 	auto HitResult = GetFirstPhysicsBodyInReach();
 	auto ComponentToGrab = HitResult.GetComponent();
@@ -93,8 +97,8 @@ void UGrabber::Grab()
 	{
 		// Attach the physics handle
 		PhysicsHandle->GrabComponent(
-			ComponentToGrab,
-			NAME_None,
+			ComponentToGrab, // The mesh to grab
+			NAME_None, // No bones needed
 			ComponentToGrab->GetOwner()->GetActorLocation(),
 			true // Allow rotation
 		);
@@ -103,46 +107,26 @@ void UGrabber::Grab()
 
 void UGrabber::Release()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Released."));
 	PhysicsHandle->ReleaseComponent();
 }
 
 const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 {
-	// Get player view point
-	FVector PlayerViewPointLocation;
-	FRotator PlayerViewPointRotation;
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewPointLocation, OUT PlayerViewPointRotation);
-
-	// Log player location and rotation
-	// UE_LOG(LogTemp, Warning, TEXT("Location: %s, Rotation: %s"), *PlayerViewPointLocation.ToString(), *PlayerViewPointRotation.ToString());
-
-	// Get line end point from the player POV
-	FVector LineTraceEnd = PlayerViewPointLocation + (PlayerViewPointRotation.Vector() * Reach);
-
 	// Draw a red trace in the world to visualize
 	// DrawDebugLine(GetWorld(), PlayerViewPointLocation, LineTraceEnd, FColor(255, 0, 0), false, 0.0f, 0.0f, 10.0f);
 
-	// Trace line hit
+	// Trace line hit result
 	FCollisionQueryParams TraceParameters(FName(TEXT("")), false, GetOwner());
-	FHitResult Hit;
+	FHitResult HitResult;
 
 	// When collide
 	GetWorld()->LineTraceSingleByObjectType(
-		OUT Hit,
-		PlayerViewPointLocation,
-		LineTraceEnd,
+		OUT HitResult,
+		GetLineTraceStart(),
+		GetLineTraceEnd(),
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
 		TraceParameters
 	);
 
-	// Get the actor which the line trace hit
-	AActor* ActorHit = Hit.GetActor();
-
-	if (ActorHit)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Line trace hit: %s."), *(ActorHit->GetName()));
-	}
-
-	return Hit;
+	return HitResult;
 }
