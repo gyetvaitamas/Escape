@@ -69,7 +69,9 @@ FVector UGrabber::GetLineTraceStart()
 	// Get player view point
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotation;
+
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewPointLocation, OUT PlayerViewPointRotation);
+
 	return PlayerViewPointLocation;
 }
 
@@ -82,6 +84,7 @@ FVector UGrabber::GetLineTraceEnd()
 
 	// Get line end point from the player POV
 	FVector LineTraceEnd = PlayerViewPointLocation + (PlayerViewPointRotation.Vector() * Reach);
+
 	return LineTraceEnd;
 }
 
