@@ -21,10 +21,33 @@ UGrabber::UGrabber()
 void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
+	FindPhysicsHandleComponent();
+	SetupInputComponent();
+	
+}
 
-	UE_LOG(LogTemp, Warning, TEXT("Grabber!"));
+// Look for attached InputComponent (on run-time)
+void UGrabber::SetupInputComponent()
+{
+	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
 
-	// Look for attached PhysicsHandle
+	if (InputComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Input component found!"));
+
+		// Bind the input axis
+		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
+		InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Release);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s class is not found!"), *GetOwner()->GetName());
+	}
+}
+
+// Look for attached PhysicsHandle
+void UGrabber::FindPhysicsHandleComponent()
+{
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
 
 	if (PhysicsHandle)
@@ -35,22 +58,6 @@ void UGrabber::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s class is not found!"), *GetOwner()->GetName());
 	}
-
-	// Look for attached InputComponent (on run-time)
-	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
-
-	if (InputComponent)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Input component found!"));
-
-		// Bind the input axis
-		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("%s class is not found!"), *GetOwner()->GetName());
-	}
-	
 }
 
 
@@ -100,5 +107,15 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 void UGrabber::Grab()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grabbed."));
+
+	// Try and reach any actors with physics body collision channel set
+
+	// If we hit something then attach a physics handle
+	// TODO attach physics handle
+}
+
+void UGrabber::Release()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Released."));
 }
 
