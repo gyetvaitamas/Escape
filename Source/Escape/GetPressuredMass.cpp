@@ -62,8 +62,10 @@ void UGetPressuredMass::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 	FText MassAsText = FText::AsNumber(GetTotalMassOfActorsOnPlate());
 
+	FText ConcatenatedText = FText::Format(FText::FromString("{0}{1}"), MassAsText, FText::FromString(" KG"));
+
 	// Change mass indicator every tick
-	GetOwner()->FindComponentByClass<UTextRenderComponent>()->SetText(MassAsText);
+	GetOwner()->FindComponentByClass<UTextRenderComponent>()->SetText(ConcatenatedText);
 
 }
 
