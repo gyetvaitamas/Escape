@@ -7,7 +7,7 @@
 #include <Engine/TriggerVolume.h>
 #include "OpenDoor.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOpenRequest);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDoorEvent);
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -18,11 +18,12 @@ class ESCAPE_API UOpenDoor : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UOpenDoor();
-	void OpenDoor();
-	void CloseDoor();
 
 	UPROPERTY(BlueprintAssignable)
-	FOnOpenRequest OnOpenRequest;
+	FDoorEvent OnOpen;
+
+	UPROPERTY(BlueprintAssignable)
+	FDoorEvent OnClose;
 
 protected:
 	// Called when the game starts
@@ -30,19 +31,12 @@ protected:
 	
 private:
 	UPROPERTY(EditAnywhere)
-	float OpenAngle = 20.0f;
-
-	UPROPERTY(EditAnywhere)
-	float CloseAngle = -90.0f;
-
-	UPROPERTY(EditAnywhere)
 	ATriggerVolume* PressurePlate = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	float DoorCloseDelay = 0.3f;
+	float TriggerMass = 30.0f;
 
-	float LastDoorOpenTime;
-
+	// The owning door
 	AActor* Owner = nullptr;
 
 	// Returns total mass of kg
