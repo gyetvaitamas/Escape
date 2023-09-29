@@ -1,8 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+#pragma once
 
 #include "Grabber.h"
-#include <DrawDebugHelpers.h>
 
 #define OUT
 
@@ -22,6 +20,7 @@ void UGrabber::BeginPlay()
 	Super::BeginPlay();
 	FindPhysicsHandleComponent();
 	SetupInputComponent();
+
 }
 
 // Look for attached InputComponent (on run-time)
@@ -41,6 +40,7 @@ void UGrabber::SetupInputComponent()
 	}
 
 	return;
+
 }
 
 // Look for attached PhysicsHandle
@@ -54,6 +54,7 @@ void UGrabber::FindPhysicsHandleComponent()
 	}
 
 	return;
+
 }
 
 // Called every frame
@@ -73,6 +74,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	}
 
 	return;
+
 }
 
 FVector UGrabber::GetLineTraceStart()
@@ -84,6 +86,7 @@ FVector UGrabber::GetLineTraceStart()
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewPointLocation, OUT PlayerViewPointRotation);
 
 	return PlayerViewPointLocation;
+
 }
 
 FVector UGrabber::GetLineTraceEnd()
@@ -97,6 +100,7 @@ FVector UGrabber::GetLineTraceEnd()
 	FVector LineTraceEnd = PlayerViewPointLocation + (PlayerViewPointRotation.Vector() * Reach);
 
 	return LineTraceEnd;
+
 }
 
 void UGrabber::Grab()
@@ -125,6 +129,7 @@ void UGrabber::Grab()
 	}
 
 	return;
+
 }
 
 void UGrabber::Release()
@@ -138,6 +143,7 @@ void UGrabber::Release()
 	PhysicsHandle->ReleaseComponent();
 
 	return;
+
 }
 
 const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
@@ -159,4 +165,5 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 	);
 
 	return HitResult;
+
 }

@@ -1,6 +1,6 @@
 #pragma once
+
 #include "GetPressuredMass.h"
-#include "Components/TextRenderComponent.h"
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #define OUT
@@ -26,9 +26,7 @@ void UGetPressuredMass::BeginPlay()
 	if (!PressurePlate)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s missing pressure plate component!"), *GetOwner()->GetName());
-	}	
-
-	UE_LOG(LogTemp, Error, TEXT("%s"), *GetOwner()->FindComponentByClass<UTextRenderComponent>()->GetName());
+	}
 
 }
 
@@ -52,6 +50,7 @@ float UGetPressuredMass::GetTotalMassOfActorsOnPlate()
 	}
 
 	return TotalMass;
+
 }
 
 
@@ -62,8 +61,9 @@ void UGetPressuredMass::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 	FText MassAsText = FText::AsNumber(GetTotalMassOfActorsOnPlate());
 
+	FText ConcatenatedText = FText::Format(FText::FromString("{0}{1}"), MassAsText, FText::FromString(" KG"));
+
 	// Change mass indicator every tick
-	GetOwner()->FindComponentByClass<UTextRenderComponent>()->SetText(MassAsText);
+	GetOwner()->FindComponentByClass<UTextRenderComponent>()->SetText(ConcatenatedText);
 
 }
-
